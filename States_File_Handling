@@ -1,0 +1,9 @@
+# Updating the Lesson 2 playtime creating an HTML drop down menu of states to pull info in from a file.
+
+print('<select>')
+with open("states.txt","r") as states_file:
+	states = states_file.read().split("\n")
+	for index, state_row in enumerate(states):
+		states[index] = state_row.split("\t")
+		print('\t<option value="{0}">{1}</option>'.format(states[index][0],states[index][1]))
+print('</select>')
