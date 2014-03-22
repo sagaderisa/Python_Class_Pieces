@@ -1,0 +1,10 @@
+# Python Playtime for Lesson 2: Movies
+
+movie_titles = ['Hunger Games: Catching Fire', '12 Years a Slave', 'Italian Job', 'How to Lose a Guy in 10 Days', 'Love Actually']
+parental_ratings = ['PG-13','R','PG-13','PG-13','R']
+bechdel_ratings = [4,4,2,3,4]
+imdb_ratings = [7.9,8.3,7.0,6.3,7.7]
+genres = ['Action','Drama','Action','Comedy','Comedy']
+
+for movie_title, parental_rating, bechdel_rating, imdb_rating, genre in zip(movie_titles, parental_ratings, bechdel_ratings, imdb_ratings, genres):
+	print("{0}, {1}, {2}, {3}, {4}".format(movie_title, parental_rating, bechdel_rating, imdb_rating, genre))
