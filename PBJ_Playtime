@@ -1,0 +1,35 @@
+# Python Lesson 1 Playtime: Making Peanut Butter and Jelly
+
+# Part 1: Can I make peanut butter?
+
+if peanut_butter > 1: 
+	if jelly > 1:
+		if bread > 2:
+			print("Peanut, peanut butter - and JELLY!")
+else:
+	print("No PBJ for you.")
+
+# Part 2: How many PBJ sandwiches can I make?
+
+sandwich_bread = bread // 2
+sandwiches = min(peanut_butter, jelly, sandwich_bread)
+
+if peanut_butter > 1:
+	if jelly > 1:
+		if bread > 2:
+			print("I can make this many sandwiches: ", sandwiches)
+			
+else:
+	print("No PBJ for you.")
+
+# Part 3: How many open-faced PBJ sandwiches can I make?
+
+sandwiches = min(peanut_butter, jelly, bread)
+
+if peanut_butter > 1:
+	if jelly > 1:
+		if bread > 2:
+			print("I can make this many sandwiches: ", sandwiches)
+			
+else:
+	print("No PBJ for you.")
