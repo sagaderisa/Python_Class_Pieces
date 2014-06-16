@@ -1,0 +1,91 @@
+# Exercise: Using your first API
+#Written in Python 2.7
+
+# API documentation: http://bechdeltest.com/api/v1/doc
+
+# My approach will be to import the Bechdel Test results, add them to 
+# my movieDatabase, and then spit out the results.
+
+
+
+import requests
+import urllib
+import collections
+from collections import defaultdict
+movieDatabase = defaultdict(dict)
+omdb_results = {}
+omdb_url_list = {}
+
+# Here's the actual search
+search = raw_input("""What movie to you want to search for? 
+You may search by movie title or IMDB ID. """)
+
+if len(search) == 7:
+	if search.isdigit():
+		bechdelurl = ('http://bechdeltest.com/api/v1/getMovieByImdbId?imdbid={0}'.format(search))
+		searchbyID = True
+else:
+	movie_title_clean = urllib.quote(search)
+	bechdelurl = ('http://bechdeltest.com/api/v1/getMoviesByTitle?title={0}'.format(movie_title_clean))
+	searchbyID = False
+
+print "The URL of the Bechdel search is ",bechdelurl, " and here are your results: "
+
+bechdelresponse = requests.get(bechdelurl).json()
+
+if type(bechdelresponse) == dict:
+	if bechdelresponse.get('status') == '404':
+		print "Could not find movie."
+	elif bechdelresponse.get('status') == '403':
+		print "Movie not yet approved."
+	elif bechdelresponse.get('status') == '505':
+		print "Invalid version requested."
+	elif bechdelresponse == []:
+		print "Sorry, not found. Or something. Your search returned '[]'"
+	elif searchbyID == True:
+		bechdelresponse = [bechdelresponse]
+		for bmovie in bechdelresponse: 
+			if bmovie['title'][-5:]==", The":
+				bmovie['title'] = "The ",bmovie['title'][:-5]
+			movieDatabase[bmovie.get('imdbid')]=bmovie
+			omdb_url = "http://www.omdbapi.com/?i=tt{0}".format(bmovie['imdbid'])
+			omdb_url_list[bmovie.get('imdbid')] = omdb_url
+			omdb_entry = requests.get(omdb_url).json()
+			omdb_results.update(omdb_entry)
+			if requests.get(omdb_url).json()['Response'] == 'False':
+				print "Your OMDB search for {0}, (IMDB ID {1}) didn't work. Try that one again.".format(bmovie['title'],bmovie['imdbid'])
+			elif requests.get(omdb_url).json()['Response'] == 'True':
+				if omdb_entry['imdbID']=="tt"+bmovie['imdbid']:
+					movieDatabase[bmovie.get('imdbid')].update(omdb_entry)
+	else:
+		print "There's another option in the dict response you didn't account for."
+elif bechdelresponse == []:
+	print "Sorry, not found. Or something. Your search returned '[]'"
+elif len(bechdelresponse) >= 1:
+	if searchbyID == True:
+		bechdelresponse = [bechdelresponse]
+	for bmovie in bechdelresponse: 
+		if bmovie['title'][-5:]==", The":
+			bmovie['title'] = "The ",bmovie['title'][:-5]
+		movieDatabase[bmovie.get('imdbid')]=bmovie
+		omdb_url = "http://www.omdbapi.com/?i=tt{0}".format(bmovie['imdbid'])
+		omdb_url_list[bmovie.get('imdbid')] = omdb_url
+		omdb_entry = requests.get(omdb_url).json()
+		omdb_results.update(omdb_entry)
+		if requests.get(omdb_url).json()['Response'] == 'False':
+			print "Your OMDB search for {0}, (IMDB ID {1}) didn't work. Try that one again.".format(bmovie['title'],bmovie['imdbid'])
+		elif requests.get(omdb_url).json()['Response'] == 'True':
+			if omdb_entry['imdbID']=="tt"+bmovie['imdbid']:
+				movieDatabase[bmovie.get('imdbid')].update(omdb_entry)
+			else:
+				print "Something's going on in line 66 I guess."	
+		else:
+			print "It's breaking between 53-58, I guess."
+else:
+	print "Apparently there's a different contingency I didn't account for. Try again."
+# print movieDatabase
+for item in movieDatabase:
+#	print movieDatabase[item]
+	for key, value in movieDatabase[item].items():
+		print key, ": ", value
+
